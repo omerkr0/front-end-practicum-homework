@@ -1,37 +1,30 @@
+// Import the axios library for making HTTP requests
 import axios from "axios";
 
-// Define a function that fetches information about a user and their posts using the provided userId
-export default async function getData(userId) {
+// Define an async function that retrieves a user's data
+async function getData(userId) {
   try {
-    // Use Promise.all to make two separate HTTP GET requests and store their results in a single array
-    const [user, posts] = await Promise.all([
-      axios.get(`https://jsonplaceholder.typicode.com/users/${userId}`),
-      axios.get(`https://jsonplaceholder.typicode.com/posts/${userId}`),
-    ]);
+    // Use axios to make an HTTP GET request to the JSONPlaceholder API for the user data
+    const { data: user } = await axios.get(
+      `https://jsonplaceholder.typicode.com/users/${userId}`
+    );
 
-    // Create an object with the relevant data from the user and posts requests
-    const result = {
-      id: user.data.id,
-      name: user.data.name,
-      username: user.data.username,
-      email: user.data.email,
-      address: user.data.address,
-      phone: user.data.phone,
-      website: user.data.website,
-      company: user.data.company,
-      posts: posts.data,
-    };
+    // Use axios to make an HTTP GET request to the JSONPlaceholder API for the user's posts
+    const { data: posts } = await axios.get(
+      `https://jsonplaceholder.typicode.com/posts/${userId}`
+    );
 
-    // Return the result object
-    return result;
+    // Return an object that includes the user data and posts
+    return { ...user, posts };
   } catch (error) {
-    // Log any errors that occur during the HTTP requests
+    // If an error occurs during the requests, log the error to the console and return null
     console.error(error);
+    return null;
   }
 }
 
-// Call the getData function with userId 1 and log the result to the console
-(async () => {
+// Define an async function that calls the getData function and returns the result
+export async function main() {
   const result = await getData(1);
-  console.log(result);
-})();
+  return result;
+}
